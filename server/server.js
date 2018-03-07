@@ -20,9 +20,10 @@ io.on('connection', (socket) =>{
 
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined')); // socket.emit emits event to a single connection
 
-    socket.on('createMessage', (message) =>{  // listen to event sent from client
+    socket.on('createMessage', (message, callback) =>{  // listen to event sent from client
         console.log('createMessage', message);
         io.emit('newMessage', generateMessage(message.from, message.text))   // emits to every single event
+        callback('This is from the server');
         // socket.broadcast.emit('newMessage',{
         //     from: message.from,
         //     text: message.text,
