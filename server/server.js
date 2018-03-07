@@ -19,6 +19,16 @@ io.on('connection', (socket) =>{
     // socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));  // emitting from server -> client
 
     // socket.emit('newMessage', generateMessage('Admin', 'New user joined')); // socket.emit emits event to a single connection
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app',
+        createdAt: new Date().getTime()
+    });
+    socket.broadcast.emit('newMessage',{
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime()
+    });
 
     socket.on('createMessage', (message) =>{  // listen to event sent from client
         console.log('createMessage', message);
@@ -27,6 +37,11 @@ io.on('connection', (socket) =>{
             text: message.text,
             createdAt: new Date().getTime()
         });
+        // socket.broadcast.emit('newMessage',{
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // })
     });
     
     socket.on('disconnect', (socket) =>{
