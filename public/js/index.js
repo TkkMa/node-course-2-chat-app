@@ -1,12 +1,25 @@
 var socket = io();
 
+function scrollToBottom(){
+    //selectors
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child');  //just added message height
+    //Heights
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight();
+    // console.log(`clientHeight: ${clientHeight}  scrollTop: ${scrollTop}`);
+    // console.log(`newMessageHeight: ${newMessageHeight}  lastMessageHeight: ${lastMessageHeight}`);
+    // console.log(`scrollHeight: ${scrollHeight}`);
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        //console.log('Should scroll')
+        messages.scrollTop(scrollHeight); // set scrollTop to scrollHeight i.e. go to the button
+    }
+}
 socket.on('connect', function () {
     console.log('Connected to server');
-
-    // socket.emit('createMessage', {  // emitting to server
-    //     from: 'Andrew',
-    //     text: 'Yup, that works for me.'
-    // });
 });
 
 socket.on('disconnect',function () {
@@ -23,6 +36,7 @@ socket.on('newMessage', function(message) {
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
     // console.log('newMessage', message);
     // var li = jQuery('<li></li>');
     // li.text(`${message.from} ${formattedTime}: ${message.text}`);
@@ -30,13 +44,6 @@ socket.on('newMessage', function(message) {
     // jQuery('#messages').append(li);
 });
 
-// Callback to fire when it receives acknowledgement from the server
-// socket.emit('createMessage', {
-//     from: 'Frank',
-//     text: 'hi'
-// }, function(data){
-//     console.log('Got it', data);
-// });
 socket.on('newLocationMessage', function(message){
     var formattedTime = moment(message.createdAt).format('h:mm a');
     var template = jQuery('#location-message-template').html();
@@ -47,15 +54,7 @@ socket.on('newLocationMessage', function(message){
     });
 
     jQuery('#messages').append(html);
-
-
-    // var li = jQuery('<li></li>');
-    // var a = jQuery('<a target="_blank">My current location</a>');  //_blank opens up a tab to view google maps
-
-    // li.text(`${message.from}${formattedTime}: `);
-    // a.attr('href', message.url)
-    // li.append(a);
-    // jQuery('#messages').append(li);
+    scrollToBottom();
 })
 
 jQuery('#message-form').on('submit', function(e){
